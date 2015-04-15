@@ -1,47 +1,140 @@
+require 'csv'
+
 class Car
-  # I need to encapsulate these objects inside the dealership...
+  attr_reader :inventory_number, :make, :model, :year
+  def initialize(args)
+    @inventory_number = args[:inventory_number]
+    @make = args[:make]
+    @model = args[:model]
+    @year = args[:year]
+  end
 end
 
 class Dealership
   def initialize(cars = nil)
     @cars = cars || []
+    load_cars_into_dealership(cars)
   end
 
-  def find_make(make)
-    cars_by_make = []
+  def load_cars_into_dealership(cars, pending_cars = [])
+    cars.each do |car|
+      pending_cars << car
+    end
+    @cars = pending_cars
+  end
+
+  def find_make(make, cars_by_make = [])
     @cars.each do |car|
-      cars_by_make << car if car.make == make
+      cars_by_make << car if car.make.upcase == make.upcase
     end
     cars_by_make
   end
 
-  def newest_car
-    # I need to return the car on the lot that is the newest...
+  def find_pre(year, results = [])
+    @cars.each do |car|
+      results << car if car.year.to_i < year.to_i
+    end
+    return results
+  end
+
+  def find_post(year, results = [])
+    @cars.each do |car|
+      results << car if car.year.to_i > year.to_i
+    end
+    return results
+  end
+
+  def newest_car(newest_car = nil)
+    @cars.each do |car|
+      if newest_car == nil || car.year > newest_car.year
+        newest_car = car
+      end
+    end
+    return newest_car
+  end
+
+  def find_all_cars(all_cars = [])
+    @cars.each_with_index do |car, index|
+      all_cars << car
+    end
+    all_cars
   end
 end
 
 module CarLoader
-  def self.get_cars_from_csv(filepath)
-    # The result is being passed to the new dealership.
-    # I need to return some useful data from this method...
+  def self.get_cars_from_csv(filepath, data= [], results = [])
+    options = {encoding: "UTF-8", headers: true, header_converters: :symbol}
+    CSV.foreach(filepath, options) {|row| data << row.to_hash}
+    data.each do |car|
+      inventory_number = car[:inventory_number]
+      make = car[:make]
+      model = car[:model]
+      year = car[:year]
+      results << Car.new(inventory_number: inventory_number, make: make, model: model, year: year)
+    end
+    return results
   end
 end
 
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
 
+
 if ARGV[0] == "find"
+
   if ARGV[1] == "all"
-    # print all of the cars on Deano's lot
-    puts dealership.cars
+    find_all_cars_results = dealership.find_all_cars
+    count = 1
+    puts "Displaying All Cars:"
+    puts "-------------------------------------"
+    find_all_cars_results.each do |car|
+      puts "#{count}: #{car.inventory_number} #{car.make} #{car.model} #{car.year}"
+      count +=1
+      puts "-------------------------------------"
+    end
+    puts "    #{count-1} Total Cars"
+
   elsif ARGV[1] == "make"
-    # print cars of the make supplied in ARGV[2]
-    puts dealership.find_make(ARGV[2])
+    puts "make"
+    make_results = dealership.find_make(ARGV[2].to_s)
+    count = 1
+    puts "Displaying All Cars of Make #{ARGV[2]}:"
+    puts "-------------------------------------"
+    make_results.each do |car|
+      puts "#{count}: #{car.inventory_number} #{car.make} #{car.model} #{car.year}"
+      count +=1
+    puts "-------------------------------------"
+    end
+    puts "    #{count-1} Total Cars"
   elsif ARGV[1] == "pre"
-    # print cars made before the year supplied in ARGV[2]
+    cars_results = dealership.find_pre(ARGV[2].to_i)
+    count = 1
+    puts "Displaying Cars Before: #{ARGV[2]}"
+    puts "-------------------------------------"
+    cars_results.each do |car|
+      puts "#{count}: #{car.inventory_number} #{car.make} #{car.model} #{car.year}"
+      count +=1
+      puts "-------------------------------------"
+    end
+    puts "    #{count-1} Total Cars"
   elsif ARGV[1] == "post"
-    # print cars made after the year supplied in ARGV[2]
+    cars_results = dealership.find_post(ARGV[2].to_i)
+    count = 1
+    puts "Displaying Cars After: #{ARGV[2]}"
+    puts "-------------------------------------"
+    cars_results.each do |car|
+      puts "#{count}: #{car.inventory_number} #{car.make} #{car.model} #{car.year}"
+      count +=1
+      puts "-------------------------------------"
+    end
+    puts "    #{count-1} Total Cars"
   elsif ARGV[1] == "newest"
-    # print the newest car on the lot
+    newest_car = dealership.newest_car
+    count = 1
+    puts "Displaying Newest Car:"
+    puts "-------------------------------------"
+      puts "#{count}: #{newest_car.inventory_number} #{newest_car.make} #{newest_car.model} #{newest_car.year}"
+      puts "-------------------------------------"
+    puts "    #{count} Total Cars"
   end
 end

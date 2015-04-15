@@ -1,12 +1,31 @@
 require_relative('dealership')
 
-describe Car do
-end
-
 describe CarLoader do
   describe "#get_cars_from_csv" do
-    xit "returns an array of Car objects" do
-      # change 'xit' to 'it' and finish this test
+    it "returns an array of Car objects" do
+      expect(CarLoader.get_cars_from_csv("inventory.csv")).to be_a(Array)
+    end
+  end
+end
+
+describe Car do
+  let(:car) {Car.new(make: "Honda", inventory_number: 123123, model: "Civic", year: 1978)}
+
+   describe "Car" do
+    it "it should have a make value" do
+      expect(car.make).to eq("Honda")
+    end
+
+    it "it should have a Model" do
+      expect(car.model).to eq("Civic")
+    end
+
+    it "it should have a year" do
+      expect(car.year).to eq(1978)
+    end
+
+    it "it should have an inventory_id" do
+      expect(car.inventory_number).to eq(123123)
     end
   end
 end
@@ -23,8 +42,8 @@ describe Dealership do
       expect(dealership.find_make("Honda").size).to eq(2)
     end
 
-    xit "returns an empty array when there are no cars of the given make" do
-      # change 'xit' to 'it' and finish this test
+    it "returns an empty array when there are no cars of the given make" do
+     expect(dealership.find_make("Tesla").size).to eq(0)
     end
   end
 end
