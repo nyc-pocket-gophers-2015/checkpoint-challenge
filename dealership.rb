@@ -1,10 +1,20 @@
+require 'csv'
+
 class Car
+  attr_reader :inventory_number, :make, :model, :year
+  def initialize(array)
+    @inventory_number = array[0]
+    @make = array[1]
+    @model= array[2]
+    @year = array[3]
+  end
   # I need to encapsulate these objects inside the dealership...
 end
 
 class Dealership
-  def initialize(cars = nil)
-    @cars = cars || []
+  attr_reader :cars, :inventory_number, :make, :model, :year, :sorted_cars
+  def initialize(cars)
+    @cars = cars
   end
 
   def find_make(make)
@@ -16,19 +26,61 @@ class Dealership
   end
 
   def newest_car
-    # I need to return the car on the lot that is the newest...
+    # cars.each {|cars| if cars.year == "2002" puts cars end }
+    # cars.group_by(&:year).each {|k,v| p k.to_i}
+    # cars.each {|c_obj| c_obj.year.to_i}.max
+    @sorted_cars = cars.sort_by {|car_obj| car_obj.year}
+    sorted_cars[-2]
+  end
+
+  def display_made_after_yr(year)
+     sorted_cars.each do |car_obj|
+      if car_obj.year.to_i > year
+        p car_obj
+      end
+    end
+  end
+
+  def display_made_before_yr(year) #delete first instance of headings and this works
+     sorted_cars.each do |car_obj|
+      if car_obj.year.to_i < year && car_obj.year != 'year'
+        p car_obj
+      end
+    end
+  end
+
+  def display_car_make(make)
+    sorted_cars.each do |car_obj|
+      if car_obj.make == make
+        p car_obj
+      end
+    end
+  end
+
+
+  def list_cars(filepath)
+
   end
 end
 
 module CarLoader
+
   def self.get_cars_from_csv(filepath)
-    # The result is being passed to the new dealership.
-    # I need to return some useful data from this method...
+    cars = []
+    data = CSV.foreach(filepath){|row|
+    cars << row}
+    car_obj = cars.map! {|array| Car.new(array)}
+    car_obj
   end
 end
 
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
+dealership.find_make('Toyota')
+dealership.newest_car
+# dealership.made_after_yr(2004)
+# dealership.display_made_before_yr(2001)
+dealership.display_car_make('Honda')
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"

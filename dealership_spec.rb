@@ -4,9 +4,10 @@ describe Car do
 end
 
 describe CarLoader do
+
   describe "#get_cars_from_csv" do
-    xit "returns an array of Car objects" do
-      # change 'xit' to 'it' and finish this test
+    it "returns an array of Car objects" do
+     expect(cars.get_cars_from_csv("inventory.csv")).to be_a()
     end
   end
 end
