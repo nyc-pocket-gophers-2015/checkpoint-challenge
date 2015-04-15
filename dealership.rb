@@ -8,7 +8,6 @@ class Car
     @make = attributes[:make]
     @model = attributes[:model]
     @year = attributes[:year]
-
    end
 end
 
@@ -25,7 +24,7 @@ class Dealership
     cars_by_make << car
        end
    end
-   p cars_by_make
+    cars_by_make
   end
 
   def newest_car
@@ -37,12 +36,33 @@ class Dealership
     end
     @cars.each do |car|
       if car.year = newest
-        return car.inspect
+        return car
       end
     end
-
-    # I need to return the car on the lot that is the newest...
   end
+
+  def pre(year)
+    pre_array = []
+    @cars.each do |car|
+      if car.year < year.to_i
+         pre_array << car
+      end
+    end
+      pre_array
+  end
+
+  def post(year)
+    post_array = []
+    @cars.each do |car|
+      if car.year > year.to_i
+         post_array << car
+      end
+    end
+      post_array
+  end
+
+
+
 end
 
 module CarLoader
@@ -59,29 +79,49 @@ module CarLoader
   end
 end
 
+def nice_print(car)
+  puts "#{car.year}, #{car.make} #{car.model}, ID : #{car.inventory_number}"
+end
+
  cars = CarLoader.get_cars_from_csv("inventory.csv")
  cars.map! do |hash|
    Car.new(hash)
 end
 
-
 dealership = Dealership.new(cars)
+
+
+
+
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
     # print all of the cars on Deano's lot
-     puts dealership.cars.inspect
+      dealership.cars.each do |car|
+      nice_print(car)
+    end
   elsif ARGV[1] == "make"
     # print cars of the make supplied in ARGV[2]
-    puts dealership.find_make(ARGV[2])
+      dealership.find_make(ARGV[2]).each do |car|
+      nice_print(car)
+    end
   elsif ARGV[1] == "pre"
     # print cars made before the year supplied in ARGV[2]
+      dealership.pre(ARGV[2]).each do |car|
+      nice_print(car)
+    end
   elsif ARGV[1] == "post"
     # print cars made after the year supplied in ARGV[2]
+     dealership.post(ARGV[2]).each do |car|
+      nice_print(car)
+    end
   elsif ARGV[1] == "newest"
     # print the newest car on the lot
-    puts dealership.newest_car
+     nice_print(dealership.newest_car)
   end
 end
+
+
+
 
 # puts dealership.cars
