@@ -5,8 +5,8 @@ end
 
 describe CarLoader do
   describe "#get_cars_from_csv" do
-    xit "returns an array of Car objects" do
-      # change 'xit' to 'it' and finish this test
+    it "returns an array of Car objects" do
+      expect(Dealership.new(cars).include).to eq()
     end
   end
 end
