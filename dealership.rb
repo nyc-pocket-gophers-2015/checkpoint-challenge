@@ -1,7 +1,7 @@
 #Dealership System Use Cases:
   # Load cars from a file - done
   # List all cars on the lot - done
-  # Display the newest car on the lot
+  # Display the newest car on the lot - done
   # Display all cars made after a given year
   # Display all cars made before a given year
   # Display all cars of a given make
@@ -42,9 +42,22 @@ class Dealership
     cars_by_make
   end
 
+  def find_pre(year)
+    cars_pre_year = []
+    @cars.each { |car| cars_pre_year << car if car.year < year}
+    cars_pre_year
+  end
+
+  def find_post(year)
+    cars_post_year = []
+    @cars.each { |car| cars_post_year << car if car.year > year}
+    cars_post_year
+  end
+
   def newest_car
     @cars.max_by { |car| car.year }
   end
+
 end
 
 module CarLoader
@@ -64,11 +77,10 @@ if ARGV[0] == "find"
   elsif ARGV[1] == "make"
     puts dealership.find_make(ARGV[2])
   elsif ARGV[1] == "pre"
-    # print cars made before the year supplied in ARGV[2]
+    puts dealership.find_pre(ARGV[2])
   elsif ARGV[1] == "post"
-    # print cars made after the year supplied in ARGV[2]
+    puts dealership.find_post(ARGV[2])
   elsif ARGV[1] == "newest"
-    # print the newest car on the lot
     puts dealership.newest_car
   end
 end
