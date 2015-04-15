@@ -1,19 +1,5 @@
 require 'csv'
 
-# module Parser
-#   require 'csv'
-#   def self.import(file)
-#     config = {headers: true, header_converters: :symbol}
-#     CSV.read(filepath, config).map {|row| row.to_hash}
-#   end
-
-#   def self.save (file, data)
-#     CSV.open(filepath, "wb") do |file|
-#       file << data.first.keys
-#       data.each { |row| file << row.values }
-#     end
-#   end
-# end
 
 class Car
   attr_accessor :inventory_number, :make, :model, :year
@@ -26,8 +12,18 @@ class Car
 end
 
 class Dealership
+  attr_accessor :cars
   def initialize(cars = nil)
     @cars = cars || []
+  end
+
+  def list(filepath)
+    @cars = CarLoader.get_cars_from_csv(filepath).map { |row| Car.new(row.to_hash)}
+    @cars.map! do |car|
+      car.instance_variables.map! {|info|  car.instance_variable_get(info)}
+    end
+     @cars.each {|car| p car.join(',')}
+
   end
 
   def find_make(make)
@@ -39,18 +35,22 @@ class Dealership
   end
 
   def newest_car
-    # I need to return the car on the lot that is the newest...
+    @cars.last
   end
 end
 
 module CarLoader
   def self.get_cars_from_csv(filepath)
-  CSV.read(filepath, :headers => true,:header_converters => :symbol).map { |row| Car.new(row.to_hash)}
+  CSV.read(filepath, :headers => true,:header_converters => :symbol).map {|row| row.to_hash}
   end
 end
 
-cars = CarLoader.get_cars_from_csv("inventory.csv")
-dealership = Dealership.new(cars)
+#cars = CarLoader.get_cars_from_csv("inventory.csv")
+dealership = Dealership.new
+p dealership.list("inventory.csv")
+p dealership.newest_car.join(',')
+
+
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
