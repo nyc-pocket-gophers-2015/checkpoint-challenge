@@ -58,8 +58,8 @@ class Dealership
   end
 
 
-  def list_cars(filepath)
-
+  def list_cars(filepath) #<+++++++++++++++++++++++++needs word
+    # CarLoader.get_cars_from_csv {|car_obj| p car_obj}
   end
 end
 
@@ -76,11 +76,12 @@ end
 
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
-dealership.find_make('Toyota')
+p dealership.find_make('Honda')
 dealership.newest_car
-# dealership.made_after_yr(2004)
-# dealership.display_made_before_yr(2001)
+dealership.display_made_after_yr(2004)
+dealership.display_made_before_yr(2001)
 dealership.display_car_make('Honda')
+# dealership.list_cars("inventory.csv") <++++++++++++++++++++++++++#needs work
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
