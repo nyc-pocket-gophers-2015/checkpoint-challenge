@@ -9,61 +9,81 @@ class Car
     @model = args[:model]
     @year = args[:year]
   end
+
+  def to_s
+    array = []
+    array << self.inventory_number
+    array << self.make
+    array << self.model
+    array << self.year
+    array.join(',')
+  end
+
 end
 
 class Dealership
   attr_accessor :cars
-  def initialize(cars = nil)
-    @cars = cars || []
+  def initialize(cars = [])
+    @cars = cars
+
   end
 
-  def list(filepath)
-    @cars = CarLoader.get_cars_from_csv(filepath).map { |row| Car.new(row.to_hash)}
-    @cars.map! do |car|
-      car.instance_variables.map! {|info|  car.instance_variable_get(info)}
+  def list
+    puts @cars
+  end
+
+  def pre
+    year = []
+    self.cars.each do |car|
+      car.year < ARGV[2] ?  year << car : car
     end
-     @cars.each {|car| p car.join(',')}
-
+  puts  year
   end
 
-  def find_make(make)
-    cars_by_make = []
+  def post
+    year = []
+    self.cars.each do |car|
+      car.year > ARGV[2] ?  year << car : car
+    end
+  puts  year
+  end
+
+  def find_make
+    make = []
     @cars.each do |car|
-      cars_by_make << car if car.make == make
+      make << car if car.make == (ARGV[2])
     end
-    cars_by_make
+   puts make
   end
 
   def newest_car
-    @cars.last
+    puts @cars.sort {|a,b| a.year <=> b.year}.last
   end
 end
 
 module CarLoader
   def self.get_cars_from_csv(filepath)
-  CSV.read(filepath, :headers => true,:header_converters => :symbol).map {|row| row.to_hash}
+  CSV.read(filepath, :headers => true,:header_converters => :symbol).map { |row| Car.new(row.to_hash)}
   end
 end
 
-#cars = CarLoader.get_cars_from_csv("inventory.csv")
-dealership = Dealership.new
-p dealership.list("inventory.csv")
-p dealership.newest_car.join(',')
+cars = CarLoader.get_cars_from_csv("inventory.csv")
+dealership = Dealership.new(cars)
+# dealership.list
+# dealership.newest_car
 
 
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
-    # print all of the cars on Deano's lot
-    puts dealership.cars
+    dealership.list
   elsif ARGV[1] == "make"
-    # print cars of the make supplied in ARGV[2]
-    puts dealership.find_make(ARGV[2])
+    dealership.find_make
   elsif ARGV[1] == "pre"
-    # print cars made before the year supplied in ARGV[2]
+    dealership.pre
   elsif ARGV[1] == "post"
-    # print cars made after the year supplied in ARGV[2]
+    dealership.post
   elsif ARGV[1] == "newest"
-    # print the newest car on the lot
+    dealership.newest_car
   end
 end
