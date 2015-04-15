@@ -2,12 +2,11 @@ require 'csv'
 
 class Car
   # I need to encapsulate these objects inside the dealership...
-
-  def intialize(attributes)
-    @inventory_number = attributes[fetch(:inventory_number)]
-    @make = attributes[fetch(:make)]
-    @model = attributes[fetch(:model)]
-    @year = attributes[fetch(:year)]
+  def initialize(attributes = {})
+    @inventory_number = attributes[:inventory_number]
+    @make = attributes[:make]
+    @model = attributes[:model]
+    @year = attributes[:year]
   end
 
 end
@@ -17,7 +16,15 @@ class Dealership
   attr_accessor :cars
 
   def initialize(cars = nil)
-    @cars = cars || []
+    self.cars = cars || []
+  end
+
+  def format_for_save(cars) #attempted ot reformat data to make rspec work
+    return cars.map do |car|
+      hash = {}
+      car.instance_variables.each {|var| hash[var.to_s.delete("@")] = car.instance_variable_get(var) }
+      hash
+    end
   end
 
   def find_make(make)
@@ -45,7 +52,14 @@ class Dealership
   end
 end
 
-def print_nice #if I have time
+def print_nice(output) #if I have time
+  # output.each{|car|
+  #   p car
+  #   # p car[:make]
+  #   # p car[:model]
+  #   # p "ID:"
+  #   # p car[:inventory_number]
+  # }
 end
 
 module CarLoader
@@ -68,6 +82,7 @@ end
 
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
+# p cars
 # dealership.find_make('Honda')
 # cars = {[Car.new(make => "Honda")]}
 
@@ -81,6 +96,14 @@ dealership = Dealership.new(cars)
 # end
 
 
+
+# p cars = [ Car.new(make: "Honda"), Car.new(make: "Honda"),
+#                 Car.new(make: "Toyota"),
+#                 Car.new(make: "Honda")]
+
+# dealership = Dealership.new(cars)
+
+# p cars
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"

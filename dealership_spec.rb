@@ -4,9 +4,11 @@ describe Car do
 end
 
 describe CarLoader do
+let(:cars) {CarLoader.get_cars_from_csv("inventory.csv")}
+
   describe "#get_cars_from_csv" do
     it "returns an array of Car objects" do
-      expect(Dealership.new(cars).include).to eq()
+      expect(Dealership.new(cars)).to be an_instance_of(Array)
     end
   end
 end
