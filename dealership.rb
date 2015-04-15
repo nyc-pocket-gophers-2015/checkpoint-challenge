@@ -1,5 +1,28 @@
+require 'csv'
+
+# module Parser
+#   require 'csv'
+#   def self.import(file)
+#     config = {headers: true, header_converters: :symbol}
+#     CSV.read(filepath, config).map {|row| row.to_hash}
+#   end
+
+#   def self.save (file, data)
+#     CSV.open(filepath, "wb") do |file|
+#       file << data.first.keys
+#       data.each { |row| file << row.values }
+#     end
+#   end
+# end
+
 class Car
-  # I need to encapsulate these objects inside the dealership...
+  attr_accessor :inventory_number, :make, :model, :year
+  def initialize(args = {})
+    @inventory_number = args[:inventory_number]
+    @make = args[:make]
+    @model = args[:model]
+    @year = args[:year]
+  end
 end
 
 class Dealership
@@ -22,8 +45,7 @@ end
 
 module CarLoader
   def self.get_cars_from_csv(filepath)
-    # The result is being passed to the new dealership.
-    # I need to return some useful data from this method...
+  CSV.read(filepath, :headers => true,:header_converters => :symbol).map { |row| Car.new(row.to_hash)}
   end
 end
 
