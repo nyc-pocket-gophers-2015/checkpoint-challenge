@@ -1,15 +1,19 @@
-#Dealership System Use Cases:
+# Dealership System Use Cases:
   # Load cars from a file - done
   # List all cars on the lot - done
   # Display the newest car on the lot - done
-  # Display all cars made after a given year
-  # Display all cars made before a given year
-  # Display all cars of a given make
+  # Display all cars made after a given year - done
+  # Display all cars made before a given year - done
+  # Display all cars of a given make - done
+  # Ability to remove a car from the master file, by entering the car's ID.
+  # Ability to add a car (and all of its details) to the master file.
+
+
 require 'csv'
 
 class Car
   # I need to encapsulate these objects inside the dealership...
-  attr_reader :make, :year
+  attr_reader :make, :year, :inventory_number
 
   def initialize(args = {})
     @inventory_number = args[:inventory_number]
@@ -21,6 +25,7 @@ class Car
   def to_s
     "#{@year} #{@make} #{@model}, ID: #{@inventory_number}"
   end
+
 end
 
 class Dealership
@@ -84,6 +89,3 @@ if ARGV[0] == "find"
     puts dealership.newest_car
   end
 end
-
-
-
