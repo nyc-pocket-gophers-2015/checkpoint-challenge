@@ -56,7 +56,7 @@ class Dealership
   def car_objects
     return @cars if @cars
     @cars = CarLoader.get_cars_from_csv(filepath).map {|car_attrs| Car.new(car_attrs)}
-    p @cars
+    @cars
   end
 
   def find_make(make)
@@ -164,22 +164,32 @@ end
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
 # p dealership.find_make("Toyota")
-# dealership.post("2000")
+# p dealership.car_objects
 if ARGV[0] == "find"
   if ARGV[1] == "all"
     # print all of the cars on Deano's lot
+    puts "Here are all the cars in Deano's lot"
+    puts "..."
     puts dealership.cars
   elsif ARGV[1] == "make"
     # print cars of the make supplied in ARGV[2]
+    puts "Here are the cars that match your make: #{ARGV[2]}"
+    puts "..."
     puts dealership.find_make(ARGV[2])
   elsif ARGV[1] == "pre"
     # print cars made before the year supplied in ARGV[2]
+    puts "Here are the cars that match your search criteria: "
+    puts "..."
     puts dealership.pre(ARGV[2])
   elsif ARGV[1] == "post"
     # print cars made after the year supplied in ARGV[2]
+    puts "Here are the cars that match your search criteria: "
+    puts "..."
     puts dealership.post(ARGV[2])
   elsif ARGV[1] == "newest"
     # print the newest car on the lot
+    puts "Here are the cars that match your search criteria: "
+    puts "..."
     puts dealership.newest_car
   end
 end

@@ -12,9 +12,9 @@ describe CarLoader do
 end
 
 describe Dealership do
-  let(:cars) {[ Car.new(make: "Honda"),
-                Car.new(make: "Toyota"),
-                Car.new(make: "Honda")]}
+  let(:cars) {[ Car.new(id: "55555", make: "Honda", year: "2012"),
+                Car.new(id: "44444", make: "Toyota", year: "2010"),
+                Car.new(id: "33333", make: "Honda", year: "2000")]}
 
   let(:dealership) { Dealership.new(cars)}
 
@@ -26,6 +26,12 @@ describe Dealership do
     it "returns an empty array when there are no cars of the given make" do
       # change 'xit' to 'it' and finish this test
       expect(dealership.find_make("Mitsubishi")).to eq(0)
+    end
+  end
+
+  describe "#newest_car" do
+    it "finds the newest car" do
+      expect(dealership.newest_car.id).to eq("55555")
     end
   end
 end
