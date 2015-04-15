@@ -1,6 +1,6 @@
 #Dealership System Use Cases:
   # Load cars from a file - done
-  # List all cars on the lot
+  # List all cars on the lot - done
   # Display the newest car on the lot
   # Display all cars made after a given year
   # Display all cars made before a given year
@@ -9,6 +9,8 @@ require 'csv'
 
 class Car
   # I need to encapsulate these objects inside the dealership...
+  attr_reader :make, :year
+
   def initialize(args = {})
     @inventory_number = args[:inventory_number]
     @make = args[:make]
@@ -30,22 +32,23 @@ class Dealership
   end
 
   def find_make(make)
-    cars_by_make = []
-    @cars.each do |car|
-      cars_by_make << car if car.make == make
+    if make == 'bmw'
+      make = 'BMW'
+    else
+      make = make.capitalize
     end
+    cars_by_make = []
+    @cars.each { |car| cars_by_make << car if car.make == make }
     cars_by_make
   end
 
   def newest_car
-    # I need to return the car on the lot that is the newest...
+    @cars.max_by { |car| car.year }
   end
 end
 
 module CarLoader
   def self.get_cars_from_csv(filepath)
-    # The result is being passed to the new dealership.
-    # I need to return some useful data from this method...
     CSV.read(filepath, :headers => true, :header_converters => :symbol).map do |car|
       Car.new(car.to_hash)
     end
@@ -59,7 +62,6 @@ if ARGV[0] == "find"
   if ARGV[1] == "all"
     puts dealership.cars
   elsif ARGV[1] == "make"
-    # print cars of the make supplied in ARGV[2]
     puts dealership.find_make(ARGV[2])
   elsif ARGV[1] == "pre"
     # print cars made before the year supplied in ARGV[2]
@@ -67,6 +69,7 @@ if ARGV[0] == "find"
     # print cars made after the year supplied in ARGV[2]
   elsif ARGV[1] == "newest"
     # print the newest car on the lot
+    puts dealership.newest_car
   end
 end
 
