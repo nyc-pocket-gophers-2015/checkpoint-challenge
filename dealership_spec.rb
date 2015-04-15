@@ -5,7 +5,7 @@ end
 
 describe CarLoader do
   describe "#get_cars_from_csv" do
-    xit "returns an array of Car objects" do
+    it "returns an array of Car objects" do
       # change 'xit' to 'it' and finish this test
     end
   end
@@ -20,11 +20,12 @@ describe Dealership do
 
   describe "#find_make" do
     it "finds all cars of a given make" do
-      expect(dealership.find_make("Honda").size).to eq(2)
+      expect(dealership.find_make("Honda").length).to eq(2)
     end
 
-    xit "returns an empty array when there are no cars of the given make" do
+    it "returns an empty array when there are no cars of the given make" do
       # change 'xit' to 'it' and finish this test
+      expect(dealership.find_make("Mitsubishi")).to eq(0)
     end
   end
 end
