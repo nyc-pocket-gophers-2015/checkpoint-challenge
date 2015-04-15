@@ -68,39 +68,6 @@ class Dealership
     car_display
   end
 
-  def add_car_to_lot
-    ARGV.clear
-    puts "Please tell us the year of the car"
-    year = gets.chomp
-    puts "Please tell us the make of the car"
-    make = gets.chomp
-    puts "Please tell us the model of the #{make}"
-    model = gets.chomp
-    puts "Please tell us the dealerships inventory_number (6 digits)"
-    inventory_number = gets.chomp
-    cars << Car.new(make: make, model: model, year: year, inventory_number: inventory_number)
-    puts "You just added a #{year} #{make} #{model} to the lot!"
-    puts "Would you like to see all the cars in the lot? (yes or no)"
-    answer = gets.chomp
-    puts all_cars if answer.downcase == "yes"
-  end
-
-  def remove_car_from_lot
-    ARGV.clear
-    puts "Please tell us the Id of the car you'd like to print. Would you like to see a list of cars?('yes' or 'no')"
-    answer = gets.chomp
-    puts all_cars if answer == 'yes'
-    puts "Please enter the ID of the car you'd like to remove from the lot:"
-    id = gets.chomp
-    car_deleted = cars.find {|car| car.inventory_number == id.to_s}
-    car_deleted = "#{car_deleted.year} #{car_deleted.make} #{car_deleted.model}"
-    cars.delete_if {|car| car.inventory_number == id.to_s }
-    puts "You just deleted the #{car_deleted}"; sleep(0.5)
-    puts "Would you like to see all the cars in the lot? (yes or no)"
-    answer = gets.chomp
-    puts all_cars if answer.downcase == "yes"
-  end
-
   private
   def create_car_objects
     the_cars = []
@@ -119,19 +86,19 @@ module CarLoader
     end
     cars
   end
-
-  def self.save_cars_to_csv(filepath, data)
-    CSV.open(filepath, "w") do |row|
-      row << data[0].instance_variables.map {|var| var.to_s.delete("@")}
-      data.each do |car|
-        row << [car.inventory_number, car.make, car.model, car.year]
-      end
-    end
-  end
 end
 
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
+dealership.find_make("Honda")
+
+
+###
+# a = Car.new(make: "Honda")
+# b = Car.new(make: "Honda")
+# c = Car.new(make: "Toyota")
+# dealership = Dealership.new([a,b,c])
+# p dealership.find_make("honda")
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
@@ -147,10 +114,5 @@ if ARGV[0] == "find"
   elsif ARGV[1] == "newest"
     puts dealership.newest_car
   end
-elsif ARGV[0] == "remove"
-  dealership.remove_car_from_lot
-  CarLoader.save_cars_to_csv('inventory.csv', dealership.cars)
-elsif ARGV[0] == "add"
-  dealership.add_car_to_lot
-  CarLoader.save_cars_to_csv('inventory.csv', dealership.cars)
 end
+
