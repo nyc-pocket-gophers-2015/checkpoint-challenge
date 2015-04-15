@@ -63,6 +63,31 @@ class Dealership
     @cars.max_by { |car| car.year }
   end
 
+  def remove_car(inventory_number)
+    #find in cars array
+    #remove it from the array
+    #rewrite the file
+    @cars.delete_if {|car| car.inventory_number == inventory_number}
+    save
+    return "deleted car id:#{inventory_number}"
+  end
+
+  def add_car(details)
+
+  end
+
+  def save(filepath = "./inventory.csv")
+    # car_rows = @cars.map! do |car|
+    #   ['inventory_number','make','model','year']
+    # end
+    CSV.open(filepath,'w') do |file|
+      file << ['inventory_number','make','model','year']
+      @cars.each do |entry|
+        file << entry
+      end
+    end
+  end
+
 end
 
 module CarLoader
@@ -87,5 +112,9 @@ if ARGV[0] == "find"
     puts dealership.find_post(ARGV[2])
   elsif ARGV[1] == "newest"
     puts dealership.newest_car
+  elsif ARGV[1] == "remove"
+    puts dealership.remove_car(ARGV[2])
+  elsif ARGV[1] == "add"
+    puts dealership.add_car(ARGV[2])
   end
 end
