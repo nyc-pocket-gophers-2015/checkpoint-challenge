@@ -4,9 +4,10 @@ describe Car do
 end
 
 describe CarLoader do
+  let(:cars) {CarLoader.get_cars_from_csv("inventory.csv")}
   describe "#get_cars_from_csv" do
-    xit "returns an array of Car objects" do
-      # change 'xit' to 'it' and finish this test
+   it "returns an array of Car objects" do
+      expect(cars.find { |item| item[:inventory_number]}).to eq("55839")
     end
   end
 end
@@ -22,10 +23,13 @@ describe Dealership do
     it "finds all cars of a given make" do
       expect(dealership.find_make("Honda").size).to eq(2)
     end
-
-    xit "returns an empty array when there are no cars of the given make" do
-      # change 'xit' to 'it' and finish this test
+  describe "#newest_car"
+    it "finds the newest car" do
+      expect(dealership.newest_car.id).to eq(78990)
     end
+    # it "returns an empty array when there are no cars of the given make" do
+    #   expect(dealership.find_make("Nissan").to eq("dl")
+    # end
   end
 end
 
