@@ -1,6 +1,3 @@
-phase-1-alt-mock-assessment
-===========================
-
 # Deano's Dealership
 
 ##Learning Competencies
