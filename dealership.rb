@@ -1,12 +1,38 @@
 require 'csv'
 
+module Parser
+  require 'csv'
+  
+  def self.import filepath
+    config = {headers: true, header_converters: :symbol}
+    CSV.read(filepath, config).map {|row| row.to_hash}
+  end
+
+  def self.save filepath, data  
+    CSV.open(filepath, "wb") do |file|
+      file << data.first.keys
+      data.each { |row| file << row.values }
+    end
+  end
+end
+
 class Car
   # I need to encapsulate these objects inside the dealership...
+  attr_reader :inventory_number, :make, :year, :model
   def initialize(attributes = {})
     @inventory_number = attributes[:inventory_number]
     @make = attributes[:make]
     @model = attributes[:model]
     @year = attributes[:year]
+  end
+
+  def to_hash
+    result = {}
+    clean_variables = instance_variables.map {|iv| iv[1..-1].to_sym }
+    clean_variables.each do |instance_variable|
+      result[instance_variable] = instance_variable_get("@#{instance_variable}")
+    end
+    result
   end
 
 end
@@ -16,39 +42,34 @@ class Dealership
   attr_accessor :cars
 
   def initialize(cars = nil)
-    self.cars = cars || []
+    @cars = cars || []
   end
 
-  def format_for_save(cars) #attempted ot reformat data to make rspec work
-    return cars.map do |car|
-      hash = {}
-      car.instance_variables.each {|var| hash[var.to_s.delete("@")] = car.instance_variable_get(var) }
-      hash
-    end
+  def formatted_cars #attempted ot reformat data to make rspec work
+    cars.map {|car| car.to_hash}
   end
 
   def find_make(make)
-    cars_by_make = []
-    @cars.each {|car| cars_by_make << car if car[:make] == make}
-    cars_by_make
+    @cars.select {|car| car.make == make}
   end
 
   def pre(year)
-    pre = []
-    @cars.each{|car| pre << car if car[:year] < year}
-    pre
+    @cars.select {|car| car.year < year}
   end
 
   def post(year)
-    post = []
-    @cars.each{|car| post << car if car[:year] > year}
-    post
+    @cars.select{|car| car.year > year}
   end
 
   def newest_car
-    newest = []
-    newest = @cars.sort_by{|car| car[:year]}
-    newest.pop
+    sorted_cars = @cars.sort_by do|car| 
+      car.year
+    end
+    sorted_cars.last
+  end
+
+  def save
+    Parser.save("inventory.csv", formatted_cars)
   end
 end
 
@@ -64,23 +85,11 @@ end
 
 module CarLoader
   def self.get_cars_from_csv(filepath)
-    data_to_arr_of_hashes = []
-    data = CSV.readlines(filepath)
-    data.each_with_index{|row,idx|
-      if idx > 0
-        data_to_arr_of_hashes << {
-          data[0][0].to_sym => row[0],
-          data[0][1].to_sym => row[1],
-          data[0][2].to_sym => row[2],
-          data[0][3].to_sym => row[3]
-        }
-      end
-    }
-    data_to_arr_of_hashes
+    Parser.import(filepath)
   end
 end
 
-cars = CarLoader.get_cars_from_csv("inventory.csv")
+cars = CarLoader.get_cars_from_csv("inventory.csv").map {|attrs| Car.new attrs}
 dealership = Dealership.new(cars)
 # p cars
 # dealership.find_make('Honda')
