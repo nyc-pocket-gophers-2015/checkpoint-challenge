@@ -1,34 +1,58 @@
+require 'pry'
+require 'CSV'
+require 'byebug'
+
+module Parser
+  def import_csv(filepath)
+    config = {headers: true, header_converters: :symbol}
+    CSV.read(filepath, config).map { |row| row.to_hash }
+  end
+end
+
 class Car
   # I need to encapsulate these objects inside the dealership...
+  def initialize(attributes)
+    @inventory_number = attributes[:inventory_number]
+    @make = attributes[:make]
+    @model = attributes[:model]
+    @year = attributes[:year]
+  end
 end
 
 class Dealership
-  def initialize(cars = nil)
-    @cars = cars || []
+  include Parser
+
+  attr_accessor :car_filepath, :cars
+
+  def initialize(car_filepath)
+    @car_filepath = car_filepath
+    @cars = import_csv(car_filepath)
   end
 
-  def find_make(make)
-    cars_by_make = []
-    @cars.each do |car|
-      cars_by_make << car if car.make == make
+  def find_attribute(att)
+    p "Which #{att} are you looking for?"
+    specific_att = gets.chomp
+    cars.each do |car|
+      print_car(car) if car[att.to_sym] == specific_att
     end
-    cars_by_make
+  end
+
+  def print_car(car)
+    car.each { |k,v| print "#{k}: #{v}, "}
+    puts
+  end
+
+  def list_cars
+    cars.each { |car| print_car(car) }
   end
 
   def newest_car
-    # I need to return the car on the lot that is the newest...
+    year_cars = cars.map { |car| car[:year] = car[:year].to_i; car }
+    year_cars.sort_by!{|car| car[:year] }[-1]
   end
 end
 
-module CarLoader
-  def self.get_cars_from_csv(filepath)
-    # The result is being passed to the new dealership.
-    # I need to return some useful data from this method...
-  end
-end
-
-cars = CarLoader.get_cars_from_csv("inventory.csv")
-dealership = Dealership.new(cars)
+dealership = Dealership.new('inventory.csv')
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
@@ -45,3 +69,5 @@ if ARGV[0] == "find"
     # print the newest car on the lot
   end
 end
+
+binding.pry
