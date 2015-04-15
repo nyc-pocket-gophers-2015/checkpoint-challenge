@@ -15,13 +15,9 @@ class Car
 end
 
 class Dealership
+  attr_reader :cars
   def initialize(cars)
     @cars = cars
-  end
-
-
-  def cars
-    @cars.each {|car| car}
   end
 
   def remove(id)
@@ -96,6 +92,4 @@ elsif ARGV[0] == "add"
   }
   dealership.add(car_hash)
 end
-
-
 
