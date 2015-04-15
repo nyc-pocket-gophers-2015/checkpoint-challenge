@@ -12,11 +12,11 @@ class Car
 
   def to_s
     array = []
-    array << self.inventory_number
+    array << self.year
     array << self.make
     array << self.model
-    array << self.year
-    array.join(',')
+    array << "ID: " + self.inventory_number
+    array.join(' ')
   end
 
 end
