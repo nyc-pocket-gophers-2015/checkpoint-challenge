@@ -29,7 +29,7 @@ class Dealership
   end
 
   def list
-    puts @cars
+    @cars
   end
 
   def pre
@@ -37,7 +37,7 @@ class Dealership
     self.cars.each do |car|
       car.year < ARGV[2] ?  year << car : car
     end
-  puts  year
+  year
   end
 
   def post
@@ -45,19 +45,19 @@ class Dealership
     self.cars.each do |car|
       car.year > ARGV[2] ?  year << car : car
     end
-  puts  year
+  year
   end
 
-  def find_make
-    make = []
+  def find_make(make)
+    car_make = []
     @cars.each do |car|
-      make << car if car.make == (ARGV[2])
+      car_make << car if car.make == make
     end
-   puts make
+  car_make
   end
 
   def newest_car
-    puts @cars.sort {|a,b| a.year <=> b.year}.last
+    @cars.sort {|a,b| a.year <=> b.year}.last
   end
 end
 
@@ -69,21 +69,18 @@ end
 
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
-# dealership.list
-# dealership.newest_car
-
 
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
-    dealership.list
+  puts  dealership.list
   elsif ARGV[1] == "make"
-    dealership.find_make
+  puts  dealership.find_make(ARGV[2])
   elsif ARGV[1] == "pre"
-    dealership.pre
+  puts  dealership.pre
   elsif ARGV[1] == "post"
-    dealership.post
+  puts  dealership.post
   elsif ARGV[1] == "newest"
-    dealership.newest_car
+  puts  dealership.newest_car
   end
 end

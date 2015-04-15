@@ -6,7 +6,7 @@ end
 describe CarLoader do
   describe "#get_cars_from_csv" do
     it "returns an array of Car objects" do
-
+      expect(CarLoader.get_cars_from_csv("inventory.csv")).to include(be_a Car)
     end
   end
 end
