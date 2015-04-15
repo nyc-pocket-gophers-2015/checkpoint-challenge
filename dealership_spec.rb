@@ -1,13 +1,13 @@
 require_relative('dealership')
-
+require 'csv'
 describe Car do
 end
 
 describe CarLoader do
+  let(:car_object) CarLoader.get_cars_from_csv("inventory.csv")
   describe "#get_cars_from_csv" do
     xit "returns an array of Car objects" do
-      # change 'xit' to 'it' and finish this test
-    end
+      expect(self.get_cars_from_csv).to eq ()
   end
 end
 
@@ -23,8 +23,8 @@ describe Dealership do
       expect(dealership.find_make("Honda").size).to eq(2)
     end
 
-    xit "returns an empty array when there are no cars of the given make" do
-      # change 'xit' to 'it' and finish this test
+    it "returns an empty array when there are no cars of the given make" do
+      expect(dealership.find_make("DBC").size).to eq(0)
     end
   end
 end
