@@ -10,12 +10,19 @@ module Parser
 end
 
 class Car
-  # I need to encapsulate these objects inside the dealership...
+  attr_reader :inventory_number, :make, :model, :year
+
   def initialize(attributes)
     @inventory_number = attributes[:inventory_number]
     @make = attributes[:make]
     @model = attributes[:model]
-    @year = attributes[:year]
+    @year = attributes[:year].to_i
+  end
+
+  def to_s
+    car_string = ""
+    instance_variables.each { |iv| car_string << "#{iv.to_s}: #{self.instance_variable_get(iv)}, " }
+    car_string.gsub!(/, $/,"\n")
   end
 end
 
@@ -26,29 +33,31 @@ class Dealership
 
   def initialize(car_filepath)
     @car_filepath = car_filepath
-    @cars = import_csv(car_filepath)
+    @cars = convert_to_objects(import_csv(car_filepath))
   end
 
-  def find_attribute(att)
-    p "Which #{att} are you looking for?"
-    specific_att = gets.chomp
-    cars.each do |car|
-      print_car(car) if car[att.to_sym] == specific_att
-    end
+  def convert_to_objects(array_of_hashes)
+    array_of_hashes.map { |car_hash| Car.new(car_hash) }
   end
 
-  def print_car(car)
-    car.each { |k,v| print "#{k}: #{v}, "}
-    puts
+  def find_make(spec_make)
+    cars.select { |car| car.make == spec_make }
   end
 
   def list_cars
-    cars.each { |car| print_car(car) }
+    cars.each { |car| car.to_s }
   end
 
   def newest_car
-    year_cars = cars.map { |car| car[:year] = car[:year].to_i; car }
-    year_cars.sort_by!{|car| car[:year] }[-1]
+    cars.sort_by{ |car| car.year }[-1]
+  end
+
+  def list_cars_pre_year(year)
+    cars.select{ |car| car.year < year.to_i }
+  end
+
+  def list_cars_post_year(year)
+    cars.select{ |car| car.year > year.to_i }
   end
 end
 
@@ -56,18 +65,26 @@ dealership = Dealership.new('inventory.csv')
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
-    # print all of the cars on Deano's lot
-    puts dealership.cars
+    puts "In all their splendor:\n\n"
+    puts dealership.list_cars
   elsif ARGV[1] == "make"
-    # print cars of the make supplied in ARGV[2]
-    puts dealership.find_make(ARGV[2])
+    matches = dealership.find_make(ARGV[2])
+    puts "'Tis you lucky day as we have #{matches.size} matches!\n\n"
+    puts matches
   elsif ARGV[1] == "pre"
-    # print cars made before the year supplied in ARGV[2]
+    matches = dealership.list_cars_pre_year(ARGV[2])
+    puts "Incredible, it seems as if you've have #{dealership.list_cars_pre_year(ARGV[2]).size} matches!\n\n"
+    puts matches
   elsif ARGV[1] == "post"
-    # print cars made after the year supplied in ARGV[2]
+    matches = dealership.list_cars_post_year(ARGV[2])
+    puts "Today the world rejoices, for we have obtained #{dealership.list_cars_post_year(ARGV[2]).size} matches! \n\n"
+    puts matches
   elsif ARGV[1] == "newest"
-    # print the newest car on the lot
+    puts "Shiny!\n\n"
+    puts dealership.newest_car
   end
 end
+
+
 
 binding.pry
