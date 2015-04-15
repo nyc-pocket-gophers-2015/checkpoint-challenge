@@ -1,8 +1,30 @@
+#Dealership System Use Cases:
+  # Load cars from a file - done
+  # List all cars on the lot
+  # Display the newest car on the lot
+  # Display all cars made after a given year
+  # Display all cars made before a given year
+  # Display all cars of a given make
+require 'csv'
+
 class Car
   # I need to encapsulate these objects inside the dealership...
+  def initialize(args = {})
+    @inventory_number = args[:inventory_number]
+    @make = args[:make]
+    @model = args[:model]
+    @year = args[:year]
+  end
+
+  def to_s
+    "#{@year} #{@make} #{@model}, ID: #{@inventory_number}"
+  end
 end
 
 class Dealership
+
+  attr_reader :cars
+
   def initialize(cars = nil)
     @cars = cars || []
   end
@@ -24,15 +46,17 @@ module CarLoader
   def self.get_cars_from_csv(filepath)
     # The result is being passed to the new dealership.
     # I need to return some useful data from this method...
+    CSV.read(filepath, :headers => true, :header_converters => :symbol).map do |car|
+      Car.new(car.to_hash)
+    end
   end
 end
 
-cars = CarLoader.get_cars_from_csv("inventory.csv")
+cars = CarLoader.get_cars_from_csv("./inventory.csv")
 dealership = Dealership.new(cars)
 
 if ARGV[0] == "find"
   if ARGV[1] == "all"
-    # print all of the cars on Deano's lot
     puts dealership.cars
   elsif ARGV[1] == "make"
     # print cars of the make supplied in ARGV[2]
@@ -45,3 +69,6 @@ if ARGV[0] == "find"
     # print the newest car on the lot
   end
 end
+
+
+

@@ -27,6 +27,7 @@ describe Dealership do
       # change 'xit' to 'it' and finish this test
     end
   end
+  # expect(dealership.newest_car.id).to eq(78990)
 end
 
 
