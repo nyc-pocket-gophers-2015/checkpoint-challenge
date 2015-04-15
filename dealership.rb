@@ -20,7 +20,7 @@ class Dealership
   def find_make(make)
      cars_by_make = []
      @cars.each do |car|
-       if car.make == make
+       if car.make == make.capitalize.to_s
     cars_by_make << car
        end
    end
@@ -61,6 +61,16 @@ class Dealership
       post_array
   end
 
+  # def remove_car(car_id)
+  #   @cars.each do |car|
+  #     if car.inventory_number == car_id
+  #       then
+  #       @cars.delete!(car)
+  #     end
+  #   end
+  # end
+
+
 
 
 end
@@ -71,11 +81,9 @@ module CarLoader
     CSV.foreach(filepath, :headers => true, :header_converters => :symbol, :converters => :all) do |row|
       data_hash[row.fields] = Hash[row.headers.zip(row.fields)]
     end
-    array = [] #THIS RETURNS ALL CARS AS A HASH OF ARRAYS KEYED TO HASHES
+    array = []
     data_hash.map{|k,v| array << v}
     return array
-    # The result is being passed to the new dealership.
-    # I need to return some useful data from this method...
   end
 end
 
@@ -119,9 +127,25 @@ if ARGV[0] == "find"
     # print the newest car on the lot
      nice_print(dealership.newest_car)
   end
+  #---- THIS IS DRIVER TEST FOR INCOMPLETE REMOVE_CAR method
+# elsif ARGV[0] == "remove"
+#   dealership.remove_car(ARGV[1])
+#   puts "Cars remaining"
+#   dealership.cars.each do |car|
+#       nice_print(car)
+#     end
 end
 
+#---- THIS IS DRIVER TEST FOR INCOMPLETE REMOVE_CAR method
+# puts "BEFORE"
+# dealership.cars.each do |car|
+#   nice_print(car)
+# end
 
-
+# dealership.remove_car(55839)
+# puts "AFTER"
+# dealership.cars.each do |car|
+#   nice_print(car)
+# end
 
 # puts dealership.cars
