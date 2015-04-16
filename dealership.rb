@@ -36,8 +36,9 @@ class Dealership
   def post(year)
      cars.select {|car| car.year > year}
   end
+
   def remove(id)
-    car.delete_if {|car| car.inventory_number == id}
+    cars.delete_if {|car| car.inventory_number == id}
   end
 
   def all
@@ -60,6 +61,10 @@ dealership = Dealership.new(cars)
  dealership.find_make("Honda")
 
 
+
+if ARGV[0] == "remove"
+  puts dealership.remove(ARGV[1])
+end
 if ARGV[0] == "find"
   if ARGV[1] == "all"
     # print all of the cars on Deano's lot
@@ -76,7 +81,5 @@ if ARGV[0] == "find"
   elsif ARGV[1] == "newest"
     # print the newest car on the lot
     puts dealership.newest_car
-  elsif ARGV[1] == "remove"
-    puts dealership.remove(ARGV[2])
   end
 end
