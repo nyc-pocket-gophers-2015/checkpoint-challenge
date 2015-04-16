@@ -1,4 +1,9 @@
 require 'csv'
+module CarLoader
+  def self.get_cars_from_csv(filepath)
+    test = CSV.read(filepath, :headers => true,:header_converters => :symbol).map { |row| Car.new(row) }
+  end
+end
 
 class Car
   attr_reader :inventory_number, :make, :year, :model
@@ -16,6 +21,8 @@ class Car
 end
 
 class Dealership
+  include CarLoader
+
   attr_reader :cars
   def initialize(cars = nil)
     @cars = cars || []
@@ -35,11 +42,11 @@ class Dealership
 
   def post(year)
      cars.select {|car| car.year > year}
-  end
+   end
 
-  def remove(id)
-    cars.delete_if {|car| car.inventory_number == id}
-  end
+  # def remove
+  #  test.delete(0)
+  # end
 
   def all
    cars
@@ -50,11 +57,6 @@ class Dealership
   end
 end
 
-module CarLoader
-  def self.get_cars_from_csv(filepath)
-    CSV.read(filepath, :headers => true,:header_converters => :symbol).map { |row| Car.new(row) }
-  end
-end
 
 cars = CarLoader.get_cars_from_csv("inventory.csv")
 dealership = Dealership.new(cars)
@@ -62,9 +64,9 @@ dealership = Dealership.new(cars)
 
 
 
-if ARGV[0] == "remove"
-  puts dealership.remove(ARGV[1])
-end
+# if ARGV[0] == "remove"
+#   puts dealership.remove
+# end
 if ARGV[0] == "find"
   if ARGV[1] == "all"
     # print all of the cars on Deano's lot
