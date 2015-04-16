@@ -1,8 +1,9 @@
 require 'csv'
+require_relative 'module'
 
 class Car
   attr_reader :inventory_number, :make, :model, :year
-  def initialize(args)
+  def initialize(args={})
     @inventory_number = args[:inventory_number]
     @make = args[:make]
     @model = args[:model]
@@ -11,68 +12,40 @@ class Car
 end
 
 class Dealership
+  attr_reader :cars
+
   def initialize(cars = nil)
     @cars = cars || []
-    load_cars_into_dealership(cars)
   end
 
-  def load_cars_into_dealership(cars, pending_cars = [])
-    cars.each do |car|
-      pending_cars << car
+  def find_make(make)
+    cars.select do |car|
+      car.make.upcase == make.upcase
     end
-    @cars = pending_cars
   end
 
-  def find_make(make, cars_by_make = [])
-    @cars.each do |car|
-      cars_by_make << car if car.make.upcase == make.upcase
+  def find_pre(year)
+    cars.select do |car|
+      car.year.to_i < year.to_i
     end
-    cars_by_make
   end
 
-  def find_pre(year, results = [])
-    @cars.each do |car|
-      results << car if car.year.to_i < year.to_i
+  def find_post(year)
+    cars.select do |car|
+      car.year.to_i > year.to_i
     end
-    return results
   end
 
-  def find_post(year, results = [])
-    @cars.each do |car|
-      results << car if car.year.to_i > year.to_i
-    end
-    return results
-  end
-
-  def newest_car(newest_car = nil)
-    @cars.each do |car|
-      if newest_car == nil || car.year > newest_car.year
-        newest_car = car
-      end
-    end
-    return newest_car
-  end
-
-  def find_all_cars(all_cars = [])
-    @cars.each_with_index do |car, index|
-      all_cars << car
-    end
-    all_cars
+  def newest_car
+    cars.sort_by do |car|
+      car.year
+    end.last
   end
 end
 
 module CarLoader
-  def self.get_cars_from_csv(filepath, data= [], results = [])
-    options = {encoding: "UTF-8", headers: true, header_converters: :symbol}
-    CSV.foreach(filepath, options) {|row| data << row.to_hash}
-    data.each do |car|
-      inventory_number = car[:inventory_number]
-      make = car[:make]
-      model = car[:model]
-      year = car[:year]
-      results << Car.new(inventory_number: inventory_number, make: make, model: model, year: year)
-    end
-    return results
+  def self.get_cars_from_csv(filepath)
+    Parser.import(filepath).map {|car_data| Car.new car_data }
   end
 end
 
@@ -83,7 +56,7 @@ dealership = Dealership.new(cars)
 if ARGV[0] == "find"
 
   if ARGV[1] == "all"
-    find_all_cars_results = dealership.find_all_cars
+    find_all_cars_results = dealership.cars
     count = 1
     puts "Displaying All Cars:"
     puts "-------------------------------------"
