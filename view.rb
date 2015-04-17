@@ -1,4 +1,4 @@
-class View
+  class View
   def self.title
     puts "*"*25
     puts "CAR DEALERSHIP APP"
@@ -11,6 +11,7 @@ class View
     puts "(find pre year) print a list of all cars before a given year."
     puts "(find post year) same as above but after a given year."
     puts "(find newest) returns the newest car on the lot."
+    puts "(add) must provide the year, make, model, and inventory_number"
     puts ""
   end
 end

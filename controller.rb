@@ -27,6 +27,8 @@ class Controller
         puts car_lot.find_post(ARGV[2])
       elsif ARGV[1] == "newest"
         puts car_lot.newest_car
+      elsif ARGV[0] == "add"
+        puts car_lot.add_car(ARGV[3..-1])
       end
     end
   end

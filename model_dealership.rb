@@ -29,10 +29,15 @@ class Dealership
 
   def save
     CSV.open('inventory.csv',"w") do |csv|
-      @tasks.each do |task|
+      cars.each do |car|
         csv << [car.to_s]
       end
     end
+  end
+
+  def add_car(vehicle)
+    cars << vehicle
+    save
   end
 
   def all!
