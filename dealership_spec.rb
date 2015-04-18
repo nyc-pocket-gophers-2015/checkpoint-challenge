@@ -1,20 +1,23 @@
 require_relative('dealership')
+require_relative ('cars')
+require_relative ('carloader')
+require_relative ('view')
 
-describe Car do
-end
+# describe Car do
+# end
 
-describe CarLoader do
-  describe "#get_cars_from_csv" do
-    xit "returns an array of Car objects" do
-      # change 'xit' to 'it' and finish this test
-    end
-  end
-end
+# describe CarLoader do
+#   describe "#get_cars_from_csv" do
+#     xit "returns an array of Car objects" do
+#       # change 'xit' to 'it' and finish this test
+#     end
+#   end
+# end
 
 describe Dealership do
-  let(:cars) {[ Car.new(make: "Honda"),
-                Car.new(make: "Toyota"),
-                Car.new(make: "Honda")]}
+  let(:cars) {[ Cars.new(make: "Honda"),
+                Cars.new(make: "Toyota"),
+                Cars.new(make: "Honda")]}
 
   let(:dealership) { Dealership.new(cars)}
 
@@ -28,5 +31,3 @@ describe Dealership do
     end
   end
 end
-
-
