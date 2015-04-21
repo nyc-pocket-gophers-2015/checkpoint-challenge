@@ -16,8 +16,12 @@ class Controller
   end
 
   def inputs
-    if ARGV[0] == "find"
-      if ARGV[1] == "all"
+    if ARGV[0] == "add"
+      args = ARGV[1..-1]
+      p args
+      car = {make: args[0], model: args[1], year: args[2]}
+      puts car_lot.add_car(Car.new car)
+    elsif ARGV[1] == "all"
         puts car_lot.all!
       elsif ARGV[1] == "make"
         puts car_lot.find_make(ARGV[2])
@@ -27,9 +31,6 @@ class Controller
         puts car_lot.find_post(ARGV[2])
       elsif ARGV[1] == "newest"
         puts car_lot.newest_car
-      elsif ARGV[0] == "add"
-        puts car_lot.add_car(ARGV[3..-1])
-      end
     end
   end
 end

@@ -7,10 +7,9 @@ module CarLoader
 end
 
 class Car
-  include CarLoader
   attr_reader :make, :year, :model, :inventory_number
-  def initialize(args)
-    @inventory_number = args[:inventory_number]
+  def initialize(args={})
+    @inventory_number = args[:inventory_number] || 0
     @make = args[:make]
     @model = args[:model]
     @year = args[:year]
@@ -18,6 +17,10 @@ class Car
 
   def to_s
     "#{self.year} #{self.make} #{self.model} ID: #{self.inventory_number}" + "\n"
+  end
+
+  def to_hash
+    {model: model, year: year, make: make, inventory_number: inventory_number}
   end
 end
 
@@ -28,9 +31,10 @@ class Dealership
   end
 
   def save
-    CSV.open('inventory.csv',"w") do |csv|
+    CSV.open('inventory.csv',"wb") do |csv|
+      csv << cars.first.to_hash.keys
       cars.each do |car|
-        csv << [car.to_s]
+        csv << car.to_hash.values
       end
     end
   end

@@ -1,4 +1,4 @@
-  class View
+class View
   def self.title
     puts "*"*25
     puts "CAR DEALERSHIP APP"
